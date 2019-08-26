@@ -1,14 +1,14 @@
+import 'gift.dart';
+import 'wish.dart';
+
 class Person {
-  String firstName;
-  String lastName;
-
-  get fullName {
-    return "${firstName} ${lastName}";
-  }
-
+  String uuid;
+  String name;
   String shirtSize;
   String pantsSize;
-  int shoeSize;
-
+  String shoeSize;
   String notes;
+
+  List<Gift> gifts = [];
+  List<Wish> wishes = [];
 }
