@@ -3,20 +3,20 @@ import 'package:christmas_list/lib/person.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class AddUser extends StatefulWidget {
+class AddPerson extends StatefulWidget {
   final Function addPerson;
 
-  AddUser({Key key, @required this.addPerson}) : super(key: key);
+  AddPerson({Key key, @required this.addPerson}) : super(key: key);
 
   @override
-  _AddUserState createState() =>
-    new _AddUserState(addPerson: addPerson);
+  _AddPersonState createState() =>
+    new _AddPersonState(addPerson: addPerson);
 }
 
-class _AddUserState extends State<StatefulWidget> {
+class _AddPersonState extends State<StatefulWidget> {
   Function addPerson;
 
-  _AddUserState({ @required this.addPerson });
+  _AddPersonState({ @required this.addPerson});
 
   List<String> textFields = [
     'name',
@@ -80,13 +80,18 @@ class _AddUserState extends State<StatefulWidget> {
     nodes[activeField].unfocus();
 
     setState(() {
-      activeField = nextFieldName;
+      FocusScope.of(context).requestFocus(nodes[nextFieldName]);
+    });
+  }
+
+  _hideKeyboard(_) {
+    setState(() {
+      FocusScope.of(context).requestFocus(new FocusNode());
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    FocusScope.of(context).requestFocus(nodes[activeField]);
 
     return Scaffold(
       appBar: AppBar(
@@ -145,7 +150,7 @@ class _AddUserState extends State<StatefulWidget> {
                   width: _textFieldWidth / 2 - 5,
                   margin: EdgeInsets.only(top: 10.0, right: 10.0),
                   child: TextField(
-                    textInputAction: TextInputAction.continueAction,
+                    textInputAction: TextInputAction.done,
                     focusNode: nodes['pantsSize'],
                     onSubmitted: _nextField,
                     decoration: InputDecoration(
@@ -168,6 +173,7 @@ class _AddUserState extends State<StatefulWidget> {
                   child: TextField(
                     textInputAction: TextInputAction.done,
                     focusNode: nodes['shoeSize'],
+                    onSubmitted: _hideKeyboard,
                     decoration: InputDecoration(
                       labelText: 'Shoe Size',
                       labelStyle: TextStyle(color: nodes['shoeSize'].hasFocus ? AppTheme.secondary : Colors.black54),
@@ -191,7 +197,7 @@ class _AddUserState extends State<StatefulWidget> {
                 textColor: Colors.white,
                 color: AppTheme.secondary[500],
                 padding: EdgeInsets.all(10.0),
-                child: Text('Add'),
+                child: Text('Save Person'),
               )
             )
           ],

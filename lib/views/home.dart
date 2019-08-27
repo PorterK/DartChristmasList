@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:christmas_list/constants/theme.dart';
 import 'package:christmas_list/lib/person.dart';
 
-import 'add_user.dart';
+import 'add_person.dart';
+import 'edit_person.dart';
 
 class Home extends StatefulWidget {
   Home({Key key, this.title}) : super(key: key);
@@ -17,18 +18,36 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<Person> _people = [];
 
-  void _openAddUser() {
+  void _openAddPerson() {
     Navigator.push(context, MaterialPageRoute<Null>(
       builder: (BuildContext context) {
-        return AddUser(addPerson: _addPerson);
+        return AddPerson(addPerson: _addPerson);
       },
       fullscreenDialog: true,
+    ));
+  }
+
+  void _openEditPerson(Person person, int index) {
+    Navigator.push(context, MaterialPageRoute<Null>(
+      builder: (BuildContext context) {
+        return EditPerson(
+          savePerson: _savePerson,
+          data: person.toMap()
+        );
+      }
     ));
   }
 
   void _addPerson(Person person) {
     setState(() {
       _people.add(person);
+    });
+  }
+
+  void _savePerson(Person person) {
+    setState(() {
+      Person toBeSaved = _people.singleWhere((p) => p.uuid == person.uuid, orElse: () => null);
+      _people[_people.indexOf(toBeSaved)] = person;
     });
   }
 
@@ -54,12 +73,13 @@ class _HomeState extends State<Home> {
                     title: Text(person.name),
                     trailing: Icon(Icons.edit),
                     subtitle: Text("${person.gifts.length} gifts, ${person.wishes.length} items in wish list"),
+                    onTap: () { _openEditPerson(person, index); },
                   ),
                 );
               },
             ),
             FlatButton(
-              onPressed: _openAddUser,
+              onPressed: _openAddPerson,
               textColor: Colors.white,
               color: AppTheme.secondary[500],
               padding: EdgeInsets.all(8.0),
