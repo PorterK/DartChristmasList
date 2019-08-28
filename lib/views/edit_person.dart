@@ -5,20 +5,22 @@ import 'package:flutter/widgets.dart';
 
 class EditPerson extends StatefulWidget {
   final Function savePerson;
+  final Function deletePerson;
   final Map data;
 
-  EditPerson({Key key, @required this.savePerson, this.data = const {} }) : super(key: key);
+  EditPerson({Key key, @required this.savePerson, @required this.deletePerson, this.data = const {} }) : super(key: key);
 
   @override
   _EditPersonState createState() =>
-    new _EditPersonState(savePerson: savePerson, data: this.data);
+    new _EditPersonState(savePerson: savePerson, deletePerson: deletePerson, data: this.data);
 }
 
 class _EditPersonState extends State<StatefulWidget> {
   Function savePerson;
+  Function deletePerson;
   Map data;
 
-  _EditPersonState({ @required this.savePerson, this.data});
+  _EditPersonState({ @required this.savePerson, @required this.deletePerson, this.data,});
 
   List<String> textFields = [
     'name',
@@ -66,8 +68,14 @@ class _EditPersonState extends State<StatefulWidget> {
   void _changePantsSize(String val) { setState(() { person.pantsSize = val; }); }
   void _changeShoeSize(String val) { setState(() { person.shoeSize = val; }); }
 
-  _onPressedEvent() {
+  _save() {
     this.savePerson(person);
+
+    Navigator.pop(context);
+  }
+
+  _delete() {
+    this.deletePerson(person);
 
     Navigator.pop(context);
   }
@@ -76,6 +84,35 @@ class _EditPersonState extends State<StatefulWidget> {
     setState(() {
       FocusScope.of(context).requestFocus(new FocusNode());
     });
+  }
+
+  _confirmDelete() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Really delete ${person.name}?"),
+          content: Text('This action cannot be undone.'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cancel'),
+              textColor: Colors.black,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('Yes'),
+              textColor: Colors.white,
+              color: AppTheme.secondary[500],
+              onPressed: () {
+                _delete();
+              },
+            ),
+          ],
+        );
+      }
+    );
   }
 
   @override
@@ -210,15 +247,27 @@ class _EditPersonState extends State<StatefulWidget> {
               ],
             ),
             Container(
-              margin: EdgeInsets.only(top: 100.0),
-              child: FlatButton(
-                onPressed: _onPressedEvent,
-                textColor: Colors.white,
-                color: AppTheme.secondary[500],
-                padding: EdgeInsets.all(10.0),
-                child: Text('Save Person'),
+              margin: EdgeInsets.only(top: 100.0, right: ((MediaQuery.of(context).size.width - _textFieldWidth) / 2) - (_textFieldWidth / 4)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  FlatButton(
+                    onPressed: _save,
+                    textColor: Colors.white,
+                    color: AppTheme.primary[500],
+                    child: Text('Save'),
+                  ),
+                  ButtonTheme(
+                    minWidth: _textFieldWidth / 2,
+                    child: FlatButton(
+                      textColor: AppTheme.secondary[500],
+                      child: Text('Delete'),
+                      onPressed: _confirmDelete,
+                    ),
+                  )
+                ],
               )
-            )
+            ),
           ],
         ),
       ),

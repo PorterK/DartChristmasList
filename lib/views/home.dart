@@ -5,6 +5,7 @@ import 'package:christmas_list/lib/person.dart';
 
 import 'add_person.dart';
 import 'edit_person.dart';
+import 'qr_scanner.dart';
 
 class Home extends StatefulWidget {
   Home({Key key, this.title}) : super(key: key);
@@ -18,12 +19,19 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<Person> _people = [];
 
+  void _openQRScanner() {
+    Navigator.push(context, MaterialPageRoute<Null>(
+      builder: (BuildContext context) {
+        return QrScanner();
+      }
+    ));
+  }
+
   void _openAddPerson() {
     Navigator.push(context, MaterialPageRoute<Null>(
       builder: (BuildContext context) {
         return AddPerson(addPerson: _addPerson);
       },
-      fullscreenDialog: true,
     ));
   }
 
@@ -32,9 +40,10 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         return EditPerson(
           savePerson: _savePerson,
+          deletePerson: _deletePerson,
           data: person.toMap()
         );
-      }
+      },
     ));
   }
 
@@ -48,6 +57,12 @@ class _HomeState extends State<Home> {
     setState(() {
       Person toBeSaved = _people.singleWhere((p) => p.uuid == person.uuid, orElse: () => null);
       _people[_people.indexOf(toBeSaved)] = person;
+    });
+  }
+
+  void _deletePerson(Person person) {
+    setState(() {
+      _people.removeWhere((p) => p.uuid == person.uuid);
     });
   }
 
@@ -93,11 +108,13 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {},
-        tooltip: 'Scan Barcode or Take Picture',
-        child: Icon(Icons.photo_camera),
-      ),
+      floatingActionButton: _people.length >= 1
+      ? FloatingActionButton(
+          onPressed: _openQRScanner,
+          tooltip: 'Scan Barcode or Take Picture',
+          child: Icon(Icons.photo_camera),
+        )
+      : null,
     );
   }
 }

@@ -9,8 +9,7 @@ class AddPerson extends StatefulWidget {
   AddPerson({Key key, @required this.addPerson}) : super(key: key);
 
   @override
-  _AddPersonState createState() =>
-    new _AddPersonState(addPerson: addPerson);
+  _AddPersonState createState() => _AddPersonState(addPerson: addPerson);
 }
 
 class _AddPersonState extends State<StatefulWidget> {
