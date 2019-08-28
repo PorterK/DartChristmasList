@@ -15,6 +15,7 @@ class _QrScannerState extends State<StatefulWidget> {
   List<CameraDescription> cameras;
   QRReaderController controller;
   bool canRender;
+  dynamic scan;
 
   _QrScannerState();
 
@@ -41,20 +42,18 @@ class _QrScannerState extends State<StatefulWidget> {
       cameras[0],
       ResolutionPreset.high,
       [
-        // CodeFormat.code128,
-        // CodeFormat.code39,
-        // CodeFormat.code93,
-        // CodeFormat.datamatrix,
         CodeFormat.ean13,
         CodeFormat.ean8,
-        // CodeFormat.itf,
-        // CodeFormat.pdf417,
         CodeFormat.qr,
         CodeFormat.upca,
         CodeFormat.upce
       ],
       (dynamic value) {
-        print(value);
+        setState(() {
+          scan = value;
+
+          _confirmScan();
+        });
       }
     );
 
@@ -67,6 +66,27 @@ class _QrScannerState extends State<StatefulWidget> {
       });
       controller.startScanning();
     });
+  }
+
+  _confirmScan() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Scan Complete'),
+          content: Text("$scan"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Done'),
+              textColor: Colors.black,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
+    );
   }
 
   @override
